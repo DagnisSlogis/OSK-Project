@@ -1,6 +1,7 @@
 // Global variables
 var inputs = [], proceses = [];
 var processButton, resetButton, addInputButton, removeInputButton, inputX, inputY, algoLabel, algoSelect, algorithm;
+var timerHtml;
 
 // Setup everything
 function setup() {
@@ -10,7 +11,7 @@ function setup() {
   algorithm = new Algorithm();
   createForm();
   createTestingCanva();
-  createElement('h1', 'CPU Scheduling').position(20, 0);
+  createElement('h1', 'CPU Scheduling Algorithm Animation').position(20, 0);
 }
 
 // Adds process input field
@@ -73,7 +74,7 @@ function startAlgorithm() {
 }
 
 function resetCanvas() {
-  console.log("asdsa");
+  console.log("resetCanvas");
   proceses = [];
   algorithm.clean();
 }
@@ -112,7 +113,8 @@ function createForm() {
 }
 
 function createTestingCanva() {
-  createElement("h3", "Avarage Wait Time:").position(310, 10);
+  createElement("h3", "Average wait time:").position(310, 70);
+  timerHtml = createElement("h3", "Timer:").position(310, 90);
 }
 
 // Validator

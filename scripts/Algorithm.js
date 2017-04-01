@@ -25,6 +25,7 @@ function Algorithm() {
             this.sizeOfCanvas = 600;
             this.timerMark = 0;
             this.currentTimePassed = 0;
+			timerHtml.html("Timer: ");
         }
     }
 
@@ -69,8 +70,10 @@ function Algorithm() {
         var $this = this; // initialize this as $this so you can access it in setTimout()
 
         this.currentTimePassed += 1000 * process.burstTime; // Time managment
+		var currTimePaasedLocalCopy = this.currentTimePassed;
 
         setTimeout(function() {
+			timerHtml.html("Timer: " + currTimePaasedLocalCopy);
             var newProcess = rect($this.startOfCanvasX, $this.startOfCanvasY, getRectWidth(scale, process), 50);
             $this.elements.push(newProcess);
             $this.elements.push(createElement('h3', 'P' + process.index).position($this.startOfCanvasX + 10, 165));
@@ -85,7 +88,7 @@ function Algorithm() {
     }
 
     this.drawAvgTime = function(time) {
-        $this.elements.push(createElement("h3", time + " s").position(480,10));
+        $this.elements.push(createElement("h3", time + " s").position(480,70));
     }
 
 }
