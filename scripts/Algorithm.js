@@ -1,5 +1,5 @@
 // Algorithm object
-function Algorithm(proceses) {
+function Algorithm() {
     this.proceses = []; // Holds all the proceses
     this.elements = []; // For easier drawn element managment
     this.startOfCanvasX = 300;
