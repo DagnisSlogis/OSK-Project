@@ -1,6 +1,6 @@
 // Algorithm object
 function Algorithm(proceses) {
-    this.proceses = proceses; // Holds all the proceses
+    this.proceses = []; // Holds all the proceses
     this.elements = []; // For easier drawn element managment
     this.startOfCanvasX = 300;
     this.startOfCanvasY = 200;
@@ -9,9 +9,28 @@ function Algorithm(proceses) {
     this.timerMark = 0;
     this.currentTimePassed = 0;
 
+    this.clean = function() {
+        if(this.elements.length) {
+            for(var i = 0; i < this.elements.length; i++ ) {
+                if(this.elements[i].elt){
+                    this.elements[i].remove();
+                }
+                else {
+                    this.elements[i].clear();
+                }
+            }
+            this.elements = [];
+            this.startOfCanvasX = 300;
+            this.startOfCanvasY = 200;
+            this.sizeOfCanvas = 600;
+            this.timerMark = 0;
+            this.currentTimePassed = 0;
+        }
+    }
+
     // First-come First-served algorithm
-    this.fcfs = function() {
-        this.deleteElements();
+    this.fcfs = function(proceses) {
+        this.proceses = proceses;
         $this = this;
         totalBurtTime = getTotalBurstTime();
         // draw init - 0 marker
@@ -27,19 +46,6 @@ function Algorithm(proceses) {
             $this.drawAvgTime(totalBurtTime / $this.proceses.length);
         }, 1000 * totalBurtTime);
     }
-
-    this.deleteElements = function() {
-        
-        this.elements.forEach(function(element){
-            element.remove();
-        });
-        this.elements = [];
-        this.startOfCanvasX = 300;
-        this.startOfCanvasY = 200;
-        this.timerMark = 0;
-        this.currentTimePassed = 0;
-    }
-
 
     //** HELPER METHODS **//
     // Get total burtsTime of all proceses

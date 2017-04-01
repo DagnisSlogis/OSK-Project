@@ -6,6 +6,7 @@ var processButton, resetButton, addInputButton, removeInputButton, inputX, input
 function setup() {
   // create canvas
   createCanvas(980, 600);
+  algorithm = new Algorithm();
   createForm();
   createTestingCanva();
   createElement('h1', 'CPU Scheduling').position(20, 0);
@@ -43,25 +44,37 @@ function removeProcess() {
 }
 
 function startAlgorithm() {
-  for (var i=0; i<inputs.length; i++) {
-    proceses.push(new Process(i+1, inputs[i].burstTime.value(), inputs[i].priority.value()));
-  }
-  algorithm = new Algorithm(proceses);
+  if(everythingIsFiled()) {
+    proceses = [];
+    for (var i=0; i<inputs.length; i++) {
+      proceses.push(new Process(i+1, inputs[i].burstTime.value(), inputs[i].priority.value()));
+    }
 
-  switch(algoSelect.value()) {
-    case "FCFS":
-        algorithm.fcfs();
-        break;
-    case "SJF":
-        console.log("SJF");
-        break;
-    case "Round robin":
-        console.log("Round robin");
-        break;
-    case "Priority":
-        console.log("Priority");
-        break;        
+    switch(algoSelect.value()) {
+      case "FCFS":
+          algorithm.clean();
+          algorithm.fcfs(proceses);
+          break;
+      case "SJF":
+          console.log("SJF");
+          break;
+      case "Round robin":
+          console.log("Round robin");
+          break;
+      case "Priority":
+          console.log("Priority");
+          break;        
+    }
   }
+  else {
+    alert("Some Process is not filled!")
+  }
+}
+
+function resetCanvas() {
+  console.log("asdsa");
+  proceses = [];
+  algorithm.clean();
 }
 
 // initialize control form
@@ -94,9 +107,20 @@ function createForm() {
   addInputButton.mousePressed(addProcess);
   removeInputButton.mousePressed(removeProcess);
   processButton.mousePressed(startAlgorithm);
+  resetButton.mousePressed(resetCanvas);
 }
 
 function createTestingCanva() {
-  rect(280, 00, 650, 550);
   createElement("h3", "Avarage Wait Time:").position(310, 10);
+}
+
+// Validator
+function everythingIsFiled() {
+  for (var i=0; i<inputs.length; i++) {
+    if (!inputs[i].burstTime.value() || !inputs[i].priority.value()) {
+      console.log(!inputs[i].burstTime.value() || !inputs[i].priority.value())
+      return false;
+    }
+  }
+  return true;
 }
