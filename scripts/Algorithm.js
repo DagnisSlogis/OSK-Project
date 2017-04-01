@@ -11,6 +11,7 @@ function Algorithm(proceses) {
 
     // First-come First-served algorithm
     this.fcfs = function() {
+        this.deleteElements();
         $this = this;
         totalBurtTime = getTotalBurstTime();
         // draw init - 0 marker
@@ -25,6 +26,18 @@ function Algorithm(proceses) {
         setTimeout(function() {
             $this.drawAvgTime(totalBurtTime / $this.proceses.length);
         }, 1000 * totalBurtTime);
+    }
+
+    this.deleteElements = function() {
+        
+        this.elements.forEach(function(element){
+            element.remove();
+        });
+        this.elements = [];
+        this.startOfCanvasX = 300;
+        this.startOfCanvasY = 200;
+        this.timerMark = 0;
+        this.currentTimePassed = 0;
     }
 
 
@@ -54,6 +67,7 @@ function Algorithm(proceses) {
         setTimeout(function() {
             var newProcess = rect($this.startOfCanvasX, $this.startOfCanvasY, getRectWidth(scale, process), 50);
             $this.elements.push(newProcess);
+            $this.elements.push(createElement('h3', 'P' + process.index).position($this.startOfCanvasX + 10, 165));
             $this.startOfCanvasX += (getRectWidth(scale, process) + 3);
             $this.drawTimerMarker(process);
         }, this.currentTimePassed);
