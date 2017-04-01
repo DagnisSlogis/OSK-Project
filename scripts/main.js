@@ -5,7 +5,8 @@ var processButton, resetButton, addInputButton, removeInputButton, inputX, input
 // Setup everything
 function setup() {
   // create canvas
-  createCanvas(980, 600);
+  var canvas = createCanvas(980, 600);
+  canvas.parent('canvas');
   algorithm = new Algorithm();
   createForm();
   createTestingCanva();
