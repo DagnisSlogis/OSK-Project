@@ -7,6 +7,7 @@ var burstUnitTime = 1000;
 var padding = 10;
 
 var totalTime;
+var averageTime;
 var processes = [];
 // Processes after algorithm
 var newProcesses = [];
@@ -33,14 +34,14 @@ $(document).ready(function() {
         // init processes
         $('#processes > tbody > tr').each(function() {
             $this = $(this);
-			var name = $this.find("td[name='name']").html();
-			log(name);
+            var name = $this.find("td[name='name']").html();
+            log(name);
             var time = parseInt($this.find("input[name='Burst time']").val());
             var priority = $this.find("input[name='Priority']").val();
             processes.push({
                 time: time,
                 priority: priority,
-				name: name
+                name: name
             });
         });
 
@@ -97,6 +98,9 @@ $(document).ready(function() {
             processCount--;
         }
     });
+
+    $("#curr_time").html("Current time: 0");
+    $("#avg_time").html("Average time: -");
 });
 
 function drawTimeLine(totalTime) {
@@ -119,7 +123,7 @@ function drawTimeLine(totalTime) {
     // draw tick marks
     unitX = lineWidth / (totalTime / unitsPerTick);
     var xPos, unit;
-	context.fillStyle = 'black';
+    context.fillStyle = 'black';
     context.font = '12pt Calibri';
     context.textAlign = 'center';
     context.textBaseline = 'top';
@@ -141,63 +145,67 @@ function drawTimeLine(totalTime) {
 }
 
 function fcfs() {
-	newProcesses = processes;
+    newProcesses = processes;
     drawNewProcesses();
 }
 
 function resetGlobals() {
     processes = [];
-	newProcesses = [];
+    newProcesses = [];
     totalTime = 0;
-	processXPos = padding;
-	currProcIndex = 0;
+    averageTime = 0;
+    processXPos = padding;
+    currProcIndex = 0;
     procWidth = 0;
-	unitsPerTick = 1;
-	unitX = 25;
-	currTime = 0;
-	lastProcFinishTime = 0;
+    unitsPerTick = 1;
+    unitX = 25;
+    currTime = 0;
+    lastProcFinishTime = 0;
 }
 
-function drawNewProcesses(){
-	
-	context.font = "16px Arial";
-	context.fillStyle = 'black';
-	context.fillText(newProcesses[0].name,processXPos,170);
+function drawNewProcesses() {
+
+    context.font = "16px Arial";
+    context.fillStyle = 'black';
+    context.fillText(newProcesses[0].name, processXPos, 170);
 
     function animationLoop() {
         currProc = newProcesses[currProcIndex];
-		
-		if((currTime / burstUnitTime) - lastProcFinishTime >= currProc.time){
-			// Switch to next process
-			lastProcFinishTime += currProc.time;
-			processXPos += currProc.time * unitsPerTick * unitX;
-			currProc = newProcesses[++currProcIndex];
-			
-						context.font = "16px Arial";
-	context.fillStyle = 'black';
-	context.fillText(newProcesses[currProcIndex].name,processXPos,170);
-		}
 
-		var rectWidth = (currTime / burstUnitTime) * unitsPerTick * unitX - (lastProcFinishTime * unitsPerTick * unitX);
-		context.beginPath();
-      context.rect(processXPos, 50, rectWidth, 100);
-      context.fillStyle = 'yellow';
-      context.fill();
-      context.lineWidth = 2;
-      context.strokeStyle = 'black';
-      context.stroke();
-		
+        if ((currTime / burstUnitTime) - lastProcFinishTime >= currProc.time) {
+            // Switch to next process
+            lastProcFinishTime += currProc.time;
+            processXPos += currProc.time * unitsPerTick * unitX;
+            currProc = newProcesses[++currProcIndex];
+
+            context.font = "16px Arial";
+            context.fillStyle = 'black';
+            context.fillText(newProcesses[currProcIndex].name, processXPos, 170);
+        }
+
+        var rectWidth = (currTime / burstUnitTime) * unitsPerTick * unitX - (lastProcFinishTime * unitsPerTick * unitX);
+        context.beginPath();
+        context.rect(processXPos, 50, rectWidth, 100);
+        context.fillStyle = 'yellow';
+        context.fill();
+        context.lineWidth = 2;
+        context.strokeStyle = 'black';
+        context.stroke();
+
         setTimeout(function() {
-            currTime += 1000/fps;
-			
+            currTime += 1000 / fps;
+            $("#curr_time").html("Current time: " + Math.round(currTime / burstUnitTime * 100) / 100);
+
             if (currTime < totalTime * burstUnitTime) {
                 animationLoop();
+            } else {
+                $("#avg_time").html("Average time: " + averageTime);
             }
-        }, 1000/fps);
+        }, 1000 / fps);
     };
     animationLoop();
 }
 
-function log(message){
-	console.log(message);
+function log(message) {
+    console.log(message);
 }
