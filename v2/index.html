@@ -1,0 +1,65 @@
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <title>CPU Scheduling</title>
+      <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" href="css/main.css">
+      <script src="js/jquery-1.11.3.min.js"></script>
+      <script src="js/main.js"></script>
+   </head>
+   <body id="body">
+      <div class="container">
+         <div class="row">
+            <div class="col-sm-8 col-12 col-sm-offset-2">
+               <h1>CPU Scheduling Algorithm Animation</h1>
+               <div class="form-group" style="margin-bottom: 25px;">
+                  <label>Choose algorithm</label>
+                  <select id="algorithm" class="form-control">
+                     <option value="0">First-Come, First-Served (FCFS)</option>
+                     <option value="1">Shortest-Job-Next (SJN)</option>
+                     <option value="2">Round Robin(RR)</option>
+                     <option value="3">Priority</option>
+                     <option value="4">Shortest Remaining</option>
+                     <option value="5">Multiple-Level Queues</option>
+                  </select>
+               </div>
+               <h3>Processes</h3>
+               <table class="table" id="processes">
+                  <thead>
+                     <tr >
+                        <th>Name</th>
+                        <th>Burst time</th>
+                        <th>Priority</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr id='p0'>
+                        <td name="name">P1</td>
+                        <td>
+                           <input type="number" name="Burst time" class="form-control"/>
+                        </td>
+                        <td>
+                           <input type="number" name="Priority" class="form-control"/>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+               <a id="add_row" class="btn btn-success pull-left">Add process</a>
+               <a id='delete_row' class="pull-right btn btn btn-danger">Remove process</a>
+               </br>
+               <div class="btn-group ">
+                  </br>
+                  <button id="start" class="btn btn-primary btn-lg btn-block">Start</button>
+               </div>
+			   <h4>Animation view</h4>
+               <canvas id="canvas" width="610" height="260">
+                  Your browser does not support the HTML5 canvas element.
+               </canvas>
+            </div>
+         </div>
+         <p id="footer">
+            © 2017 Authors: Kristaps Krūmiņš, Dagnis Sloģis, Eduards Vāvere
+         </p>
+      </div>
+   </body>
+</html>

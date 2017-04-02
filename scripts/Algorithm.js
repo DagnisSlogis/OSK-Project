@@ -40,7 +40,10 @@ function Algorithm() {
         scale = $this.sizeOfCanvas / totalBurtTime;
 
         for (var i = 0; i < $this.proceses.length; i++) {
-            $this.drawProcess($this.proceses[i]);
+			setTimeout(function() {
+				$this.drawProcess($this.proceses[i]);
+			//timerHtml.html("Timer: " + currTimePaasedLocalCopy);
+        }, this.currentTimePassed);
         }
 
         setTimeout(function() {
@@ -63,23 +66,35 @@ function Algorithm() {
         return scale * process.burstTime;
     }
 
+	var width = 1;
     // Draws process in canvas
     this.drawProcess = function(process) {
         fill(this.processColor);
         strokeWeight(2);
         var $this = this; // initialize this as $this so you can access it in setTimout()
-
+		var startTime = this.currentTimePassed;
         this.currentTimePassed += 1000 * process.burstTime; // Time managment
-		var currTimePaasedLocalCopy = this.currentTimePassed;
+		var endTime = this.currentTimePassed;
+		var currTime = startTime;
+		var interval = 100;
+	
+		var endWidth = getRectWidth(scale, process);
+		var steps = 1000 * process.burstTime / interval;
+		var widthStep = endWidth / steps;
+		var processRect = rect($this.startOfCanvasX, $this.startOfCanvasY, width, 50);
+		$this.elements.push(processRect);
+		
+		var procInterval = setInterval(function () {
+			width += widthStep;
+			
+			currTime += interval;
+			console.log(width);
+			if(currTime >= endTime){
+				clearInterval(procInterval);
+				console.log("done");
+			}
+		}, interval);
 
-        setTimeout(function() {
-			timerHtml.html("Timer: " + currTimePaasedLocalCopy);
-            var newProcess = rect($this.startOfCanvasX, $this.startOfCanvasY, getRectWidth(scale, process), 50);
-            $this.elements.push(newProcess);
-            $this.elements.push(createElement('h3', 'P' + process.index).position($this.startOfCanvasX + 10, 165));
-            $this.startOfCanvasX += (getRectWidth(scale, process) + 3);
-            $this.drawTimerMarker(process);
-        }, this.currentTimePassed);
     }
 
     this.drawTimerMarker = function(process) {
