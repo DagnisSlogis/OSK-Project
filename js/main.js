@@ -154,18 +154,30 @@ function drawTimeLine(totalTime) {
     context.restore();
 }
 
+// First come first served algorithm
 function fcfs() {
     newProcesses = processes;
     drawNewProcesses();
-    averageTime = fcfs_avg_wait()
+    averageTime = avg_wait_time();
 }
 
-function fcfs_avg_wait() {
+// Shortest job next
+function sjn() {
+    newProcesses = processes.sort(function(a,b) {
+        return a.time - b.time;
+    }).map(function(elem, index, arr) {
+        return elem;
+    });
+    drawNewProcesses();
+    averageTime = avg_wait_time();
+}
+
+function avg_wait_time() {
     var avgWaitTime = 0;
-    for (var i = 0; i < (processes.length - 1); i++) {
-        avgWaitTime += processes[i].time;
+    for (var i = 0; i < (newProcesses.length - 1); i++) {
+        avgWaitTime += newProcesses[i].time;
     }
-    return avgWaitTime / processes.length;
+    return avgWaitTime / newProcesses.length;
 }
 
 function resetGlobals() {
