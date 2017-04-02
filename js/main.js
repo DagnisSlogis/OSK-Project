@@ -88,7 +88,7 @@ $(document).ready(function() {
     });
 
     $("#curr_time").html("Current time: 0 s");
-    $("#avg_time").html("Average time: -");
+    $("#avg_time").html("Average waiting time: -");
 });
 
 // Validated the fields
@@ -157,7 +157,15 @@ function drawTimeLine(totalTime) {
 function fcfs() {
     newProcesses = processes;
     drawNewProcesses();
-    averageTime = totalTime / processes.length;
+    averageTime = fcfs_avg_wait()
+}
+
+function fcfs_avg_wait() {
+    var avgWaitTime = 0;
+    for (var i = 0; i < (processes.length - 1); i++) {
+        avgWaitTime += processes[i].time;
+    }
+    return avgWaitTime / processes.length;
 }
 
 function resetGlobals() {
@@ -172,7 +180,7 @@ function resetGlobals() {
     unitX = 25;
     currTime = 0;
     lastProcFinishTime = 0;
-    $("#avg_time").html("Average time: -");
+    $("#avg_time").html("Average waiting time: -");
 }
 
 function drawNewProcesses() {
@@ -213,7 +221,7 @@ function drawNewProcesses() {
             if (currTime < totalTime * burstUnitTime) {
                 animationLoop();
             } else {
-                $("#avg_time").html("Average time: " + averageTime + " s");
+                $("#avg_time").html("Average waiting time: " + averageTime + " s");
             }
         }, 1000 / fps);
     };
