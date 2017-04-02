@@ -2,7 +2,7 @@
 var canvas;
 var context;
 var processCount = 1;
-var fps = 30;
+var fps = 50;
 var burstUnitTime = 1000;
 var padding = 10;
 
@@ -31,42 +31,44 @@ $(document).ready(function() {
 
         resetGlobals();
 
-        // init processes
-        $('#processes > tbody > tr').each(function() {
-            $this = $(this);
-            var name = $this.find("td[name='name']").html();
-            log(name);
-            var time = parseInt($this.find("input[name='Burst time']").val());
-            var priority = $this.find("input[name='Priority']").val();
-            processes.push({
-                time: time,
-                priority: priority,
-                name: name
+        if (validationPassed()) {
+            // init processes
+            $('#processes > tbody > tr').each(function() {
+                $this = $(this);
+                var name = $this.find("td[name='name']").html();
+                log(name);
+                var time = parseInt($this.find("input[name='Burst time']").val());
+                var priority = parseInt($this.find("input[name='Priority']").val());
+                processes.push({
+                    time: time,
+                    priority: priority,
+                    name: name
+                });
             });
-        });
 
-        // Calculate total time
-        for (var i = 0; i < processes.length; i++) {
-            totalTime += processes[i].time;
-        }
+            // Calculate total time
+            for (var i = 0; i < processes.length; i++) {
+                totalTime += processes[i].time;
+            }
 
-        drawTimeLine(totalTime);
+            drawTimeLine(totalTime);
 
-        var algorithm = parseInt($('#algorithm').val());
+            var algorithm = parseInt($('#algorithm').val());
 
-        switch (algorithm) {
-            case 0:
-                fcfs();
-                break;
-            case 1:
-                sjn();
-                break;
-            case 2:
-                rr();
-                break;
-            case 3:
-                priority();
-                break;
+            switch (algorithm) {
+                case 0:
+                    fcfs();
+                    break;
+                case 1:
+                    sjn();
+                    break;
+                case 2:
+                    rr();
+                    break;
+                case 3:
+                    priority();
+                    break;
+            }
         }
 
     });
@@ -74,20 +76,35 @@ $(document).ready(function() {
     $("#add_row").click(function() {
         $('#processes').append('<tr id="p' + processCount + '"></tr>');
         $('#p' + processCount).html("<td name='name'>P" + (processCount + 1) + "</td>" +
-            "<td><input type='text' name='Burst time' class='form-control input-md'></td>" +
-            "<td><input type='number' name='Priority' class='form-control input-md'></td>");
+            "<td><input type='text' name='Burst time' class='form-control input-md' value='0' /></td>" +
+            "<td><input type='number' name='Priority' class='form-control input-md' value='0'/></td>");
         processCount++;
     });
     $("#delete_row").click(function() {
         if (processCount > 1) {
-            $("#p" + (processCount - 1)).html('');
+            $("#p" + (processCount - 1)).remove();
             processCount--;
         }
     });
 
-    $("#curr_time").html("Current time: 0");
+    $("#curr_time").html("Current time: 0 s");
     $("#avg_time").html("Average time: -");
 });
+
+// Validated the fields
+function validationPassed() {
+    var validationPassed = true;
+    $('#processes > tbody > tr').each(function() {
+        if($(this).find("input[name='Burst time']").val() == 0 || $(this).find("input[name='Priority']").val() == 0) {
+            validationPassed = false;
+            return 0;
+        }
+    });
+    if (!validationPassed) {
+        alert("Fill all the fields");
+    }
+    return validationPassed;
+}
 
 function drawTimeLine(totalTime) {
     var centerY = 10;
@@ -127,12 +144,20 @@ function drawTimeLine(totalTime) {
         xPos = Math.round(xPos + unitX);
     }
 
+    if(totalTime == unit) {
+        context.moveTo(canvas.width - padding, centerY - tickSize / 2);
+        context.lineTo(canvas.width - padding, centerY + tickSize / 2);
+        context.stroke();
+        context.fillText(unit, canvas.width - padding, centerY + tickSize / 2 + 3);
+    }
+
     context.restore();
 }
 
 function fcfs() {
     newProcesses = processes;
     drawNewProcesses();
+    averageTime = totalTime / processes.length;
 }
 
 function resetGlobals() {
@@ -147,6 +172,7 @@ function resetGlobals() {
     unitX = 25;
     currTime = 0;
     lastProcFinishTime = 0;
+    $("#avg_time").html("Average time: -");
 }
 
 function drawNewProcesses() {
@@ -154,6 +180,7 @@ function drawNewProcesses() {
     context.font = "16px Arial";
     context.fillStyle = 'black';
     context.fillText(newProcesses[0].name, processXPos, 170);
+    var color = "#" + Math.floor(Math.random()*16777215).toString(16); 
 
     function animationLoop() {
         currProc = newProcesses[currProcIndex];
@@ -163,6 +190,7 @@ function drawNewProcesses() {
             lastProcFinishTime += currProc.time;
             processXPos += currProc.time * unitsPerTick * unitX;
             currProc = newProcesses[++currProcIndex];
+            color = "#" + Math.floor(Math.random()*16777215).toString(16);
 
             context.font = "16px Arial";
             context.fillStyle = 'black';
@@ -172,7 +200,7 @@ function drawNewProcesses() {
         var rectWidth = (currTime / burstUnitTime) * unitsPerTick * unitX - (lastProcFinishTime * unitsPerTick * unitX);
         context.beginPath();
         context.rect(processXPos, 50, rectWidth, 100);
-        context.fillStyle = 'yellow';
+        context.fillStyle = color;
         context.fill();
         context.lineWidth = 2;
         context.strokeStyle = 'black';
@@ -180,12 +208,12 @@ function drawNewProcesses() {
 
         setTimeout(function() {
             currTime += 1000 / fps;
-            $("#curr_time").html("Current time: " + Math.round(currTime / burstUnitTime * 100) / 100);
+            $("#curr_time").html("Current time: " + Math.round(currTime / burstUnitTime * 100) / 100 + " s");
 
             if (currTime < totalTime * burstUnitTime) {
                 animationLoop();
             } else {
-                $("#avg_time").html("Average time: " + averageTime);
+                $("#avg_time").html("Average time: " + averageTime + " s");
             }
         }, 1000 / fps);
     };
