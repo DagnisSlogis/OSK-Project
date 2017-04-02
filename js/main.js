@@ -71,20 +71,6 @@ $(document).ready(function() {
 
     });
 
-    $("#algorithm").change(function() {
-        size = $('#size').val();
-        oneDivideBySizeSquare = 1 / (size * size);
-        sizeDividedBy2Rounded = Math.round(size / 2);
-
-        if (size == 3) {
-            unsharpMask = get3x3UnsharpMask();
-        } else if (size == 5) {
-            unsharpMask = get5x5UnsharpMask();
-        } else {
-            unsharpMask = get7x7UnsharpMask();
-        }
-    });
-
     $("#add_row").click(function() {
         $('#processes').append('<tr id="p' + processCount + '"></tr>');
         $('#p' + processCount).html("<td name='name'>P" + (processCount + 1) + "</td>" +
