@@ -172,6 +172,27 @@ function sjn() {
     averageTime = avg_wait_time();
 }
 
+// Round robin
+function rr() {
+    newProcesses = processes.map(function(elem, index, arr) {
+        elem.time = 1;
+        return elem;
+    });
+    drawNewProcesses();
+    averageTime = avg_wait_time();
+}
+
+// Priority
+function priority() {
+    newProcesses = processes.sort(function(a,b) {
+        return a.priority > b.priority;
+    }).map(function(elem, index, arr) {
+        return elem;
+    });
+    drawNewProcesses();
+    averageTime = avg_wait_time();
+}
+
 function avg_wait_time() {
     var avgWaitTime = 0;
     for (var i = 0; i < (newProcesses.length - 1); i++) {
@@ -233,7 +254,7 @@ function drawNewProcesses() {
             if (currTime < totalTime * burstUnitTime) {
                 animationLoop();
             } else {
-                $("#avg_time").html("Average waiting time: " + averageTime + " s");
+                $("#avg_time").html("Average waiting time: " + averageTime.toFixed(2) + " s");
             }
         }, 1000 / fps);
     };
