@@ -1,20 +1,30 @@
 // Global variables
 var canvas;
 var context;
-var processCount = 1;
+// How many processes there are
+var processCount = 2;
 var fps = 50;
+// Burst time in seconds
 var burstUnitTime = 1000;
+// padding for canvas
 var padding = 10;
+var isAnimationRunning = false;
+var stopAnimation = false;
 
+// Burst time sum for all processes
 var totalTime;
+// Average waiting time
 var averageTime;
 var processes = [];
 // Processes after algorithm
 var newProcesses = [];
+// X positon for current process
 var procXPos;
 var currProcIndex;
 var procWidth;
+// Time units per one time lane tick
 var unitsPerTick;
+// One unit width in pixels
 var unitX;
 var currTime;
 var lastProcFinishTime;
@@ -26,6 +36,11 @@ $(document).ready(function() {
     context = canvas.getContext('2d');
 
     $("#start").click(function() {
+		if(isAnimationRunning){
+			// Stop previous animation
+			stopAnimation = true;
+		}
+		
         // Clear canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -35,10 +50,13 @@ $(document).ready(function() {
             // init processes
             $('#processes > tbody > tr').each(function() {
                 $this = $(this);
+				// Get name
                 var name = $this.find("td[name='name']").html();
-                log(name);
+				// Get time
                 var time = parseInt($this.find("input[name='Burst time']").val());
+				// Get priority
                 var priority = parseInt($this.find("input[name='Priority']").val());
+				
                 processes.push({
                     time: time,
                     priority: priority,
@@ -76,8 +94,8 @@ $(document).ready(function() {
     $("#add_row").click(function() {
         $('#processes').append('<tr id="p' + processCount + '"></tr>');
         $('#p' + processCount).html("<td name='name'>P" + (processCount + 1) + "</td>" +
-            "<td><input type='text' name='Burst time' class='form-control input-md' value='0' /></td>" +
-            "<td><input type='number' name='Priority' class='form-control input-md' value='0'/></td>");
+            "<td><input type='text' name='Burst time' class='form-control input-md' value='1' /></td>" +
+            "<td><input type='number' name='Priority' class='form-control input-md' value='1'/></td>");
         processCount++;
     });
     $("#delete_row").click(function() {
@@ -224,12 +242,13 @@ function drawNewProcesses() {
     var color = "#" + Math.floor(Math.random()*16777215).toString(16); 
 
     function animationLoop() {
+		isAnimationRunning = true;
         currProc = newProcesses[currProcIndex];
 
         if ((currTime / burstUnitTime) - lastProcFinishTime >= currProc.time) {
             // Switch to next process
             lastProcFinishTime += currProc.time;
-            processXPos += currProc.time * unitsPerTick * unitX;
+            processXPos += currProc.time / unitsPerTick * unitX;
             currProc = newProcesses[++currProcIndex];
             color = "#" + Math.floor(Math.random()*16777215).toString(16);
 
@@ -238,7 +257,7 @@ function drawNewProcesses() {
             context.fillText(newProcesses[currProcIndex].name, processXPos, 170);
         }
 
-        var rectWidth = (currTime / burstUnitTime) * unitsPerTick * unitX - (lastProcFinishTime * unitsPerTick * unitX);
+        var rectWidth = (currTime / burstUnitTime / unitsPerTick) * unitX - (lastProcFinishTime / unitsPerTick * unitX);
         context.beginPath();
         context.rect(processXPos, 50, rectWidth, 100);
         context.fillStyle = color;
@@ -249,16 +268,23 @@ function drawNewProcesses() {
 
         setTimeout(function() {
             currTime += 1000 / fps;
-            $("#curr_time").html("Current time: " + Math.round(currTime / burstUnitTime * 100) / 100 + " s");
+            $("#curr_time").html("Current time: " + (Math.round(currTime / burstUnitTime * 100) / 100).toFixed(2) + " s");
 
             if (currTime < totalTime * burstUnitTime) {
-                animationLoop();
+				if(stopAnimation){
+					stopAnimation = false;
+				} else {
+					animationLoop();
+				}
             } else {
                 $("#avg_time").html("Average waiting time: " + averageTime.toFixed(2) + " s");
             }
         }, 1000 / fps);
     };
-    animationLoop();
+	
+	isAnimationRunning = true;
+	animationLoop();
+
 }
 
 function log(message) {
