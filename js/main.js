@@ -273,16 +273,17 @@ function drawNewProcesses() {
             if (currTime < totalTime * burstUnitTime) {
 				if(stopAnimation){
 					stopAnimation = false;
+					isAnimationRunning = false;
 				} else {
 					animationLoop();
 				}
             } else {
+				isAnimationRunning = false;
                 $("#avg_time").html("Average waiting time: " + averageTime.toFixed(2) + " s");
             }
         }, 1000 / fps);
     };
 	
-	isAnimationRunning = true;
 	animationLoop();
 
 }
