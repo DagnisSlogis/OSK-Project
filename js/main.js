@@ -39,21 +39,32 @@ $(document).ready(function() {
                 log(name);
                 var time = parseInt($this.find("input[name='Burst time']").val());
                 var priority = parseInt($this.find("input[name='Priority']").val());
+                var isBg = $this.find("input[name='IsBackground']").is(":checked") ? 1 : 0;
                 processes.push({
                     time: time,
                     priority: priority,
-                    name: name
+                    name: name,
+                    isBg: isBg
                 });
             });
 
+            var algorithm = parseInt($('#algorithm').val());
+
             // Calculate total time
             for (var i = 0; i < processes.length; i++) {
-                totalTime += processes[i].time;
+                var deltaToTotalTime;
+
+                if(algorithm == 2) // rr - paskaidrojums: lūdzu izlasit komentāru pirms rr funkcijas
+                    deltaToTotalTime = 1;
+                else if(algorithm == 4 && processes[i].isBg == 0) // multivelel - līdzīgi rr
+                     deltaToTotalTime = 1;
+                else
+                    deltaToTotalTime = processes[i].time;
+
+                totalTime += deltaToTotalTime;
             }
 
             drawTimeLine(totalTime);
-
-            var algorithm = parseInt($('#algorithm').val());
 
             switch (algorithm) {
                 case 0:
@@ -68,6 +79,9 @@ $(document).ready(function() {
                 case 3:
                     priority();
                     break;
+                case 4:
+                    multilevel();
+                    break;
             }
         }
 
@@ -77,7 +91,8 @@ $(document).ready(function() {
         $('#processes').append('<tr id="p' + processCount + '"></tr>');
         $('#p' + processCount).html("<td name='name'>P" + (processCount + 1) + "</td>" +
             "<td><input type='text' name='Burst time' class='form-control input-md' value='0' /></td>" +
-            "<td><input type='number' name='Priority' class='form-control input-md' value='0'/></td>");
+            "<td><input type='number' name='Priority' class='form-control input-md' value='0'/></td>" +
+            "<td><div class='checkboxCol'><input type='checkbox' name='IsBackground' class='form-control fixedWidthCheckbox' value='0'/></div></td>");
         processCount++;
     });
     $("#delete_row").click(function() {
@@ -173,6 +188,10 @@ function sjn() {
 }
 
 // Round robin
+//Each process gets a small unit of CPU time (time quantum q), usually 10-100 milliseconds.
+//After this time has elapsed, the process is preempted and added to the end of the ready queue.
+// mums laika kvants būs 1, jo tas garantē, ka nebūs gļuki, jo procesa min burst time ir 1
+// elem.time tiek resetots reset funkcijā, tādēļ to šeit drīkst mainīt
 function rr() {
     newProcesses = processes.map(function(elem, index, arr) {
         elem.time = 1;
@@ -187,6 +206,28 @@ function priority() {
     newProcesses = processes.sort(function(a,b) {
         return a.priority > b.priority;
     }).map(function(elem, index, arr) {
+        return elem;
+    });
+    drawNewProcesses();
+    averageTime = avg_wait_time();
+}
+
+// Multilevel description:
+//Ready queue is partitioned into separate queues, eg:
+//foreground (interactive)
+//background (batch)
+//Process permanently in a given queue
+//Each queue has its own scheduling algorithm:
+//foreground – RR
+//background – FCFS
+//Scheduling must be done between the queues:
+//Fixed priority scheduling; (i.e., serve all from foreground then from background).  Possibility of starvation.
+function multilevel() {
+    newProcesses = processes.sort(function(a,b) {
+       return a.isBg > b.isBg;
+    }).map(function(elem, index, arr) {
+        if(elem.isBg == 0)
+            elem.time = 1;
         return elem;
     });
     drawNewProcesses();
