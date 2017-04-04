@@ -19,8 +19,7 @@
                      <option value="1">Shortest-Job-First (SJF)</option>
                      <option value="2">Round Robin(RR)</option>
                      <option value="3">Priority</option>
-                  <!--   <option value="4">Shortest Remaining</option> šim vajag preemptive exponential evaraging, pielikšu otrdien, ja izdomāšu kā to parādīt
-                     <option value="5">Multiple-Level Queues</option> šim vajag ķeksi vai tas Foreground vai Background, pielikšu otrdien -->
+                     <option value="4">Multiple-Level Queues (Fixed priority scheduling - Foreground first)</option>
                   </select>
                </div>
                <h3>Processes</h3>
@@ -30,6 +29,7 @@
                         <th>Name</th>
                         <th>Burst time</th>
                         <th>Priority</th>
+                        <th>Is background?</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -49,6 +49,9 @@
                         </td>
                         <td>
                            <input type="number" name="Priority" class="form-control" value="1"/>
+                        </td>
+                        <td>
+                        <div class="checkboxCol"><input type="checkbox" name="IsBackground" class="form-control fixedWidthCheckbox" value="0"/></div>
                         </td>
                      </tr>
                   </tbody>
