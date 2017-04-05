@@ -62,7 +62,8 @@ $(document).ready(function() {
                     time: time,
                     priority: priority,
                     name: name,
-                    isBg: isBg
+                    isBg: isBg,
+                    color: "#" + Math.floor(Math.random()*16777215).toString(16)
                 });
             });
 
@@ -74,8 +75,8 @@ $(document).ready(function() {
 
                 if(algorithm == 2) // rr - paskaidrojums: lūdzu izlasit komentāru pirms rr funkcijas
                     deltaToTotalTime = 1;
-                else if(algorithm == 4 && processes[i].isBg == 0) // multivelel - līdzīgi rr
-                     deltaToTotalTime = 1;
+                else if(algorithm == 4 && processes[i].isBg == 0) // multivelel demonstrēs vienu schedulēšanas iterāciju
+                     deltaToTotalTime = 1;                   // šim nav iespējams realizēt full rr analogu pēc būtības, jo tas parāda vienu iterāciju
                 else
                     deltaToTotalTime = processes[i].time;
 
@@ -99,6 +100,9 @@ $(document).ready(function() {
                     break;
                 case 4:
                     multilevel();
+                    break;
+                case 5:
+                    fullrr();
                     break;
             }
         }
@@ -252,6 +256,24 @@ function multilevel() {
     averageTime = avg_wait_time();
 }
 
+function fullrr() {
+    newProcesses = [];
+
+    for(var i = 0; !processes.every(function(p) {return p.time == 0}); i++, i %= processes.length) {
+
+        if(processes[i].time > 0) {
+            isAnyLeft = true;
+            var clonedProc = Object.assign({}, processes[i]);
+            clonedProc.time = 1;
+            processes[i].time--;
+            newProcesses.push(clonedProc);
+        }
+    }
+
+    drawNewProcesses();
+    averageTime = avg_wait_time();
+}
+
 function avg_wait_time() {
     var avgWaitTime = 0;
     for (var i = 0; i < (newProcesses.length - 1); i++) {
@@ -280,7 +302,8 @@ function drawNewProcesses() {
     context.font = "16px Arial";
     context.fillStyle = 'black';
     context.fillText(newProcesses[0].name, processXPos, 170);
-    var color = "#" + Math.floor(Math.random()*16777215).toString(16); 
+    var color = newProcesses[0].color;
+    //var color = "#" + Math.floor(Math.random()*16777215).toString(16); 
 
     function animationLoop() {
 		isAnimationRunning = true;
@@ -290,8 +313,10 @@ function drawNewProcesses() {
             // Switch to next process
             lastProcFinishTime += currProc.time;
             processXPos += currProc.time / unitsPerTick * unitX;
+
             currProc = newProcesses[++currProcIndex];
-            color = "#" + Math.floor(Math.random()*16777215).toString(16);
+            color = currProc.color;
+            //color = "#" + Math.floor(Math.random()*16777215).toString(16);
 
             context.font = "16px Arial";
             context.fillStyle = 'black';

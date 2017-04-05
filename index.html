@@ -17,9 +17,10 @@
                   <select id="algorithm" class="form-control">
                      <option value="0">First-Come, First-Served (FCFS)</option>
                      <option value="1">Shortest-Job-First (SJF)</option>
-                     <option value="2">Round Robin(RR)</option>
+                     <option value="2">Round Robin(RR) (time quantum - 1s)</option>
                      <option value="3">Priority</option>
                      <option value="4">Multiple-Level Queues (Fixed priority scheduling - Foreground first)</option>
+                     <option value="5">Using execute time - Round Robin(RR) full process lifespan (time quantum - 1s)</option>
                   </select>
                </div>
                <h3>Processes</h3>
@@ -27,7 +28,7 @@
                   <thead>
                      <tr >
                         <th>Name</th>
-                        <th>Burst time</th>
+                        <th>Burst time <span style="font-size:70%;">(Execute time in RR full)</span></th>
                         <th>Priority</th>
                         <th>Is background?</th>
                      </tr>
@@ -40,6 +41,9 @@
                         </td>
                         <td>
                            <input type="number" name="Priority" class="form-control" value="1"/>
+                        </td>
+                        <td>
+                        <div class="checkboxCol"><input type="checkbox" name="IsBackground" class="form-control fixedWidthCheckbox" value="0"/></div>
                         </td>
                      </tr>
 					 <tr id='p1'>
